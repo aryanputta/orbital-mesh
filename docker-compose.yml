@@ -1,0 +1,102 @@
+version: "3.9"
+
+networks:
+  orbital-net:
+    driver: bridge
+
+volumes:
+  timescale-data:
+  redis-data:
+
+services:
+  redis:
+    image: redis/redis-stack-server:latest
+    container_name: orbital-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - orbital-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  timescaledb:
+    image: timescale/timescaledb:latest-pg16
+    container_name: orbital-timescaledb
+    environment:
+      POSTGRES_USER: orbital
+      POSTGRES_PASSWORD: orbital
+      POSTGRES_DB: orbital
+    ports:
+      - "5432:5432"
+    volumes:
+      - timescale-data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - orbital-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U orbital -d orbital"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: orbital-backend
+    env_file:
+      - .env
+    environment:
+      REDIS_URL: redis://redis:6379
+      POSTGRES_DSN: postgresql://orbital:orbital@timescaledb:5432/orbital
+      API_HOST: 0.0.0.0
+      API_PORT: 8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/certs:/app/certs:ro
+    networks:
+      - orbital-net
+    depends_on:
+      redis:
+        condition: service_healthy
+      timescaledb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: orbital-frontend
+    networks:
+      - orbital-net
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: orbital-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - orbital-net
+    depends_on:
+      - backend
+      - frontend
+    restart: unless-stopped

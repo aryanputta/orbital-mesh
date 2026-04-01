@@ -1,0 +1,136 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+*.pyo
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.python-version
+
+# Environment variables (keep .env.example)
+.env.local
+.env.production
+.env.staging
+
+# PyTorch / ML
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+runs/
+wandb/
+mlruns/
+
+# Jupyter
+.ipynb_checkpoints
+*.ipynb
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+*.py,cover
+nosetests.xml
+test-results/
+
+# Node.js / Frontend
+node_modules/
+frontend/dist/
+frontend/build/
+frontend/.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# TypeScript
+*.tsbuildinfo
+
+# Docker
+.dockerignore
+
+# Certificates (generated locally)
+backend/certs/
+*.pem
+*.key
+*.csr
+*.crt
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+log/
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# Redis dumps
+dump.rdb
+
+# OS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Secrets
+secrets/
+*.secret
+credentials.json
+
+# Misc
+.cache/
+tmp/
+temp/
